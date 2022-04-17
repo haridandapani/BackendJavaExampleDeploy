@@ -47,15 +47,19 @@ public final class Main {
   }
 
   private void run() {
-    OptionParser parser = new OptionParser();
-    parser.accepts("gui");
-    parser.accepts("port").withRequiredArg().ofType(Integer.class)
-        .defaultsTo(DEFAULT_PORT);
-
-    OptionSet options = parser.parse(args);
-    if (options.has("gui")) {
-      runSparkServer((int) options.valueOf("port"));
-    }
+    
+    /*
+      	OptionParser parser = new OptionParser();
+	    parser.accepts("gui");
+	    parser.accepts("port").withRequiredArg().ofType(Integer.class)
+	        .defaultsTo(DEFAULT_PORT);
+	
+	    OptionSet options = parser.parse(args);
+	    if (options.has("gui")) {
+	      runSparkServer((int) options.valueOf("port"));
+	    }
+    */
+    runSparkServer(getHerokuAssignedPort());
   }
 
   private void runSparkServer(int port) {
@@ -82,6 +86,16 @@ public final class Main {
     // easier, but it’s not a good idea for deployment.
     Spark.before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
   }
+  
+  
+  
+  static int getHerokuAssignedPort() {
+	    ProcessBuilder processBuilder = new ProcessBuilder();
+	    if (processBuilder.environment().get("PORT") != null) {
+	      return Integer.parseInt(processBuilder.environment().get("PORT"));
+	    }
+	    return DEFAULT_PORT;
+	  }
 
   /**
    * Display an error page when an exception occurs in the server.
